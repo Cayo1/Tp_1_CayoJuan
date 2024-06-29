@@ -1,259 +1,238 @@
 package ar.edu.unju.fi.e18;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Scanner;
-import ar.edu.unju.fi.e18Model.Destino;
+
+import ar.edu.unju.fi.e18Model.DestinoTuristico;
 import ar.edu.unju.fi.e18Model.Pais;
+
 public class Main {
+    private static ArrayList<Pais> paises = new ArrayList<>();
+    private static ArrayList<DestinoTuristico> destinos = new ArrayList<>();
 
-	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
-        ArrayList<Pais> paises = new ArrayList<>();
-        ArrayList<Destino> destinos = new ArrayList<>();
+    public static void main(String[] args) {
+        precargarPaises();
 
-        paises.add(new Pais("AR-0000", "Argentina"));
-        paises.add(new Pais("BR-0001", "Brasil"));
-        paises.add(new Pais("UY-0002", "Uruguay"));
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
 
-        int opcion = 0 ;
-        opcion = scanner.nextInt();
-        try {
-            do {
-                MostrarMenu();
-                opcion = scanner.nextInt();
+        do {
+            mostrarMenu();
+            opcion = scanner.nextInt();
+            scanner.nextLine(); 
 
-                switch (opcion) {
-                    case 1:
-                        altaDestinoTuristico(scanner, destinos, paises);
-                        break;
-                    case 2:
-                        mostrarDestinosTuristicos(destinos);
-                        break;
-                    case 3:
-                        modificarPaisDestinoTuristico(scanner, destinos, paises);
-                        break;
-                    case 4:
-                        destinos.clear();
-                        System.out.println("Se han eliminado todos los destinos turisticos.");
-                        break;
-                    case 5:
-                        eliminarDestinoTuristico(scanner, destinos);
-                        break;
-                    case 6:
-                        mostrarDestinosOrdenadosPorNombre(destinos);
-                        break;
-                    case 7:
-                        mostrarTodosLosPaises(paises);
-                        break;
-                    case 8:
-                        mostrarDestinosPorPais(scanner, destinos);
-                        break;
-                    case 9:
-                        System.out.println("Saliendo del programa");
-                        break;
-                    default:
-                        System.out.println("Opcion invalida. Intente de nuevo.");
-                        break;
-                }
-            } while (opcion != 9);
-        } catch (InputMismatchException e) {
-            System.out.println("Ingrese un número valido.");
-            scanner.nextLine();
-        }
-
-        scanner.close();
-    }
-	private static void MostrarMenu() {
-		System.out.println("Menu");
-        System.out.println("1 - Alta de destino turistico");
-        System.out.println("2 - Mostrar todos los destinos turisticos");
-        System.out.println("3 - Modificar el país de un destino turistico");
-        System.out.println("4 - Limpiar la lista de destinos turisticos");
-        System.out.println("5 - Eliminar un destino turistico");
-        System.out.println("6 - Mostrar destinos turísticos ordenados por nombre");
-        System.out.println("7 - Mostrar todos los paises");
-        System.out.println("8 - Mostrar destinos turísticos por país");
-        System.out.println("9 - Salir");
-        System.out.println("Ingrese su opción: ");
-	}
-	
-	public static void altaDestinoTuristico(Scanner scanner, ArrayList<Destino> destinos, ArrayList<Pais> paises) {
-        try {
-		System.out.println("Ingrese el codigo del destino:");
-        String codigo = scanner.next();
-        scanner.nextLine();
-        System.out.println("Ingrese el nombre del destino:");
-        String nombre = scanner.nextLine();
-        System.out.println("Ingrese el precio del destino:");
-        double precio = scanner.nextDouble();
-        System.out.println("Ingrese el codigo del país asociado al destino:");
-        String codigoPais = scanner.next();
-
-        Pais paisAsociado = null;
-        for (Pais pais : paises) {
-            if (pais.getCodigo().equalsIgnoreCase(codigoPais)) {
-                paisAsociado = pais;
-                break;
-            }
-        }
-
-        if (paisAsociado != null) {
-            System.out.println("Ingrese la cantidad de dias del destino:");
-            int cantidadDias = scanner.nextInt();
-            Destino nuevoDestino = new Destino(codigo, nombre, precio, paisAsociado, cantidadDias);
-            destinos.add(nuevoDestino);
-            System.out.println("Destino agregado con exito.");
-        } else {
-            System.out.println("El codigo de pais ingresado no corresponde a ningun pais existente.");
-        }}catch (InputMismatchException e) {
-            System.err.println("Error: Se esperaba un valor numérico para el precio o la cantidad de días.");
-        } catch (Exception e) {
-            System.err.println("Se produjo un error al agregar el destino turístico: " + e.getMessage());
-        } finally {
-           
-        }
-    }
-
-    public static void mostrarDestinosTuristicos(ArrayList<Destino> destinos) {
-    	try {
-        if (destinos.isEmpty()) {
-            System.out.println("No hay destinos para mostrar.");
-        } else {
-            System.out.println("Destinos Turísticos");
-            for (Destino destino : destinos) {
-                System.out.println(destino);
-            }
-        }}catch (Exception e) {
-            System.err.println("Se produjo un error al mostrar los destinos turísticos: " + e.getMessage());
-        } finally {
-            
-        }
-    }
-
-    public static void modificarPaisDestinoTuristico(Scanner scanner, ArrayList<Destino> destinos, ArrayList<Pais> paises) {
-       try {
-    	System.out.println("Ingrese el codigo del destino a modificar:");
-        String codigoDestino = scanner.next();
-
-        Destino destinoEncontrado = null;
-        for (Destino destino : destinos) {
-            if (destino.getCodigo().equalsIgnoreCase(codigoDestino)) {
-                destinoEncontrado = destino;
-                break;
-            }
-        }
-
-        if (destinoEncontrado != null) {
-            System.out.println("Ingrese el nuevo codigo del país asociado al destino:");
-            String nuevoCodigoPais = scanner.next();
-
-            Pais nuevoPaisAsociado = null;
-            for (Pais pais : paises) {
-                if (pais.getCodigo().equalsIgnoreCase(nuevoCodigoPais)) {
-                    nuevoPaisAsociado = pais;
+            switch (opcion) {
+                case 1:
+                    altaDestinoTuristico(scanner);
                     break;
+                case 2:
+                    mostrarDestinosTuristicos();
+                    break;
+                case 3:
+                    modificarPaisDestino(scanner);
+                    break;
+                case 4:
+                    limpiarDestinosTuristicos();
+                    break;
+                case 5:
+                    eliminarDestinoTuristico(scanner);
+                    break;
+                case 6:
+                    mostrarDestinosOrdenados();
+                    break;
+                case 7:
+                    mostrarPaises();
+                    break;
+                case 8:
+                    mostrarDestinosPorPais(scanner);
+                    break;
+                case 9:
+                    System.out.println("Saliendo del programa...");
+                    break;
+                default:
+                    System.out.println("Opción inválida. Intente nuevamente.");
+            }
+        } while (opcion != 9);
+    }
+
+    private static void mostrarMenu() {
+        System.out.println("Menú de opciones:");
+        System.out.println("1 - Alta de destino turístico");
+        System.out.println("2 - Mostrar todos los destinos turísticos");
+        System.out.println("3 - Modificar el país de un destino turístico");
+        System.out.println("4 - Limpiar el ArrayList de destino turísticos");
+        System.out.println("5 - Eliminar un destino turístico");
+        System.out.println("6 - Mostrar los destinos turísticos ordenados por nombre");
+        System.out.println("7 - Mostrar todos los países");
+        System.out.println("8 - Mostrar los destinos turísticos que pertenecen a un país");
+        System.out.println("9 - Salir");
+        System.out.print("Seleccione una opción: ");
+    }
+
+    private static void precargarPaises() {
+        paises.add(new Pais("ARG", "Argentina"));
+        paises.add(new Pais("BRA", "Brasil"));
+        paises.add(new Pais("CHL", "Chile"));
+        paises.add(new Pais("USA", "Estados Unidos"));
+        paises.add(new Pais("ESP", "España"));
+    }
+
+    private static void altaDestinoTuristico(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el código del destino: ");
+            String codigo = scanner.nextLine();
+            System.out.print("Ingrese el nombre del destino: ");
+            String nombre = scanner.nextLine();
+            System.out.print("Ingrese el precio del destino: ");
+            double precio = scanner.nextDouble();
+            System.out.print("Ingrese la cantidad de días: ");
+            int cantidadDias = scanner.nextInt();
+            scanner.nextLine(); 
+            System.out.print("Ingrese el código del país: ");
+            String codigoPais = scanner.nextLine();
+            Pais pais = buscarPaisPorCodigo(codigoPais);
+
+            if (pais != null) {
+                DestinoTuristico destino = new DestinoTuristico(codigo, nombre, precio, pais, cantidadDias);
+                destinos.add(destino);
+                System.out.println("Destino turístico agregado exitosamente.");
+            } else {
+                System.out.println("País no encontrado.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al agregar destino turístico: " + e.getMessage());
+        }
+    }
+
+    private static void mostrarDestinosTuristicos() {
+        if (destinos.isEmpty()) {
+            System.out.println("No hay destinos turísticos registrados.");
+        } else {
+            for (DestinoTuristico destino : destinos) {
+                System.out.println(destino);
+            }
+        }
+    }
+
+    private static void modificarPaisDestino(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el código del destino a modificar: ");
+            String codigoDestino = scanner.nextLine();
+            DestinoTuristico destino = buscarDestinoPorCodigo(codigoDestino);
+
+            if (destino != null) {
+                System.out.print("Ingrese el nuevo código del país: ");
+                String nuevoCodigoPais = scanner.nextLine();
+                Pais nuevoPais = buscarPaisPorCodigo(nuevoCodigoPais);
+
+                if (nuevoPais != null) {
+                    destino.setPais(nuevoPais);
+                    System.out.println("País del destino turístico modificado exitosamente.");
+                } else {
+                    System.out.println("País no encontrado.");
+                }
+            } else {
+                System.out.println("Destino turístico no encontrado.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al modificar el país del destino turístico: " + e.getMessage());
+        }
+    }
+
+    private static void limpiarDestinosTuristicos() {
+        destinos.clear();
+        System.out.println("Todos los destinos turísticos han sido eliminados.");
+    }
+
+    private static void eliminarDestinoTuristico(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el código del destino a eliminar: ");
+            String codigoDestino = scanner.nextLine();
+            Iterator<DestinoTuristico> iterator = destinos.iterator();
+
+            boolean encontrado = false;
+            while (iterator.hasNext()) {
+                DestinoTuristico destino = iterator.next();
+                if (destino.getCodigo().equals(codigoDestino)) {
+                    iterator.remove();
+                    encontrado = true;
+                    System.out.println("Destino turístico eliminado exitosamente.");
                 }
             }
 
-            if (nuevoPaisAsociado != null) {
-                destinoEncontrado.setPais(nuevoPaisAsociado);
-                System.out.println("El país asociado al destino se ha modificado con exito.");
-            } else {
-                System.out.println("El codigo de pais ingresado no corresponde a ningún pais existente.");
+            if (!encontrado) {
+                System.out.println("Destino turístico no encontrado.");
             }
-        } else {
-            System.out.println("No se encontro ningún destino con el codigo ingresado.");
-        }}catch (Exception e) {
-            System.err.println("Se produjo un error al modificar el país del destino turístico: " + e.getMessage());
-        } finally {
-            
+        } catch (Exception e) {
+            System.out.println("Error al eliminar destino turístico: " + e.getMessage());
         }
     }
 
-    public static void eliminarDestinoTuristico(Scanner scanner, ArrayList<Destino> destinos) {
-    	try {
-        System.out.println("Ingrese el código del destino turístico a eliminar:");
-        String codigoDestino = scanner.next();
-
-        Iterator<Destino> iterator = destinos.iterator();
-        boolean encontrado = false;
-        while (iterator.hasNext()) {
-            Destino destino = iterator.next();
-            if (destino.getCodigo().equalsIgnoreCase(codigoDestino)) {
-                iterator.remove();
-                encontrado = true;
-                System.out.println("Destino turístico eliminado con éxito.");
-                break;
-            }
-        }
-
-        if (!encontrado) {
-            System.out.println("No se encontro ningún destino con el codigo ingresado.");
-        }}catch (Exception e) {
-            System.err.println("Se produjo un error al eliminar el destino turístico: " + e.getMessage());
-        } finally {
-            
-        }
-    }
-
-    public static void mostrarDestinosOrdenadosPorNombre(ArrayList<Destino> destinos) {
-    	try {
+    private static void mostrarDestinosOrdenados() {
         if (destinos.isEmpty()) {
-            System.out.println("No hay destinos turísticos para mostrar.");
+            System.out.println("No hay destinos turísticos registrados.");
         } else {
-            Collections.sort(destinos, Comparator.comparing(Destino::getNombre));
-            System.out.println("Destinos Turisticos Ordenados por Nombre");
-            for (Destino destino : destinos) {
+            Collections.sort(destinos, Comparator.comparing(DestinoTuristico::getNombre));
+            for (DestinoTuristico destino : destinos) {
                 System.out.println(destino);
             }
-        }}catch (Exception e) {
-            System.err.println("Se produjo un error al mostrar los destinos turísticos ordenados por nombre: " + e.getMessage());
-        } finally {
-        	
         }
-    	
     }
 
-    public static void mostrarTodosLosPaises(ArrayList<Pais> paises) {
-    	try {
+    private static void mostrarPaises() {
         if (paises.isEmpty()) {
-            System.out.println("No hay paises para mostrar.");
+            System.out.println("No hay países registrados.");
         } else {
-            System.out.println("Países");
             for (Pais pais : paises) {
                 System.out.println(pais);
-            }}}
-         catch (Exception e) {
-            System.err.println("Se produjo un error al mostrar los países: " + e.getMessage());
-        } finally {         
-        }
-    }
-
-    public static void mostrarDestinosPorPais(Scanner scanner, ArrayList<Destino> destinos) {
-    	try {
-        System.out.println("Ingrese el codigo del pais:");
-        String codigoPais = scanner.next();
-
-        System.out.println(" Destinos para el Pais con Codigo " + codigoPais + " ***");
-        boolean encontrado = false;
-        for (Destino destino : destinos) {
-            if (destino.getPais().getCodigo().equalsIgnoreCase(codigoPais)) {
-                System.out.println(destino);
-                encontrado = true;
             }
         }
-        if (!encontrado) {
-            System.out.println("No se encontraron destinos para el pais con codigo " + codigoPais);
-        }
-    }catch (InputMismatchException e) {
-        System.err.println("Se esperaba un formato de entrada incorrecto.");
-    } finally {
-   
-        scanner.nextLine(); 
     }
-    }
- }
 
+    private static void mostrarDestinosPorPais(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el código del país: ");
+            String codigoPais = scanner.nextLine();
+            Pais pais = buscarPaisPorCodigo(codigoPais);
+
+            if (pais != null) {
+                boolean encontrado = false;
+                for (DestinoTuristico destino : destinos) {
+                    if (destino.getPais().equals(pais)) {
+                        System.out.println(destino);
+                        encontrado = true;
+                    }
+                }
+
+                if (!encontrado) {
+                    System.out.println("No hay destinos turísticos registrados para este país.");
+                }
+            } else {
+                System.out.println("País no encontrado.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al mostrar destinos turísticos por país: " + e.getMessage());
+        }
+    }
+
+    private static Pais buscarPaisPorCodigo(String codigo) {
+        for (Pais pais : paises) {
+            if (pais.getCodigo().equalsIgnoreCase(codigo)) {
+                return pais;
+            }
+        }
+        return null;
+    }
+
+    private static DestinoTuristico buscarDestinoPorCodigo(String codigo) {
+        for (DestinoTuristico destino : destinos) {
+            if (destino.getCodigo().equalsIgnoreCase(codigo)) {
+                return destino;
+            }
+        }
+        return null;
+    }
+}
